@@ -1,12 +1,12 @@
-module Parsing (
-    module Parsing,
+module Parsing
+  ( module Parsing,
     module Data.Void,
     module Text.Megaparsec,
     module Text.Megaparsec.Char,
     module Text.Megaparsec.Debug,
     Text,
     readMaybe,
-)
+  )
 where
 
 import Data.Text (Text, pack)
@@ -22,17 +22,26 @@ type Parser = Parsec Void Text
 eatSome :: Parser ()
 eatSome = L.space space1 empty empty
 
+sipSome :: Parser ()
+sipSome = L.space hspace1 empty empty
+
 eatMany :: Parser ()
 eatMany = L.space space empty empty
 
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme eatSome
 
+hlexeme :: Parser a -> Parser a
+hlexeme = L.lexeme sipSome
+
 symbol :: Text -> Parser Text
 symbol = L.symbol eatSome
 
 nat :: Parser Int
 nat = lexeme L.decimal
+
+hnat :: Parser Int
+hnat = hlexeme L.decimal
 
 int :: Parser Int
 int = L.signed eatSome nat

@@ -1,16 +1,20 @@
-module Utils (
-    module Utils,
+module Utils
+  ( module Utils,
     module Data.List,
     module Data.Ord,
     module Data.Function,
     module Data.Composition,
     amap,
     mapAdjacent,
-)
+    digitToInt,
+  )
 where
 
 import Control.Applicative hiding (some)
-import Data.Composition -- mostly for .:
+-- mostly for .:
+import Control.Monad
+import Data.Char (digitToInt)
+import Data.Composition
 import Data.Function
 import Data.List
 import Data.List.HT (mapAdjacent)
@@ -48,18 +52,18 @@ fromPairs lst = (map fst lst, map snd lst)
 -- Generates line segment between two endpoints
 fillLine :: Coord -> Coord -> [Coord]
 fillLine (x, y) (x', y')
-    | x == x' = map (x,) [min y y' .. max y y']
-    | y == y' = map (,y) [min x x' .. max x x']
-    | otherwise = zip xList yList
+  | x == x' = map (x,) [min y y' .. max y y']
+  | y == y' = map (,y) [min x x' .. max x x']
+  | otherwise = zip xList yList
   where
     xList =
-        if x < x'
-            then [x, x + 1 .. x']
-            else [x, x - 1 .. x']
+      if x < x'
+        then [x, x + 1 .. x']
+        else [x, x - 1 .. x']
     yList =
-        if y < y'
-            then [y, y + 1 .. y']
-            else [y, y - 1 .. y']
+      if y < y'
+        then [y, y + 1 .. y']
+        else [y, y - 1 .. y']
 
 nthTri :: Int -> Int
 nthTri n = (n * (n + 1)) `div` 2
@@ -79,3 +83,9 @@ liftT1 f (x, y) = (f x, f y)
 
 liftT2 :: (a -> a -> b) -> (a, a) -> (a, a) -> (b, b)
 liftT2 f a b = (on f fst a b, on f snd a b)
+
+cAnd :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+cAnd = liftM2 (&&)
+
+cOr :: (a -> Bool) -> (a -> Bool) -> a -> Bool
+cOr = liftM2 (||)

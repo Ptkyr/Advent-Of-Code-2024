@@ -1,7 +1,7 @@
-module Arrays (
-    module Arrays,
+module Arrays
+  ( module Arrays,
     module Data.Array,
-)
+  )
 where
 
 import Data.Array
@@ -40,10 +40,10 @@ listArr2D0 arr = listArray ((0, 0), (x - 1, y - 1)) $ concat arr
 -- WARNING: partial function
 indexByValue :: (Ix i, Eq e) => e -> Array i e -> i
 indexByValue val =
-    fst
-        . head
-        . dropWhile (\a -> snd a /= val)
-        . assocs
+  fst
+    . head
+    . dropWhile (\a -> snd a /= val)
+    . assocs
 
 ayMax :: Arr2D e -> Int
 ayMax = snd . snd . bounds
