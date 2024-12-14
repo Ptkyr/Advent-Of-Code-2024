@@ -1,0 +1,104 @@
+cabal-version:      2.4
+name:               aoc2024
+version:            0.1.0.0
+
+author:             Ptkyr
+
+common aoc
+    build-depends:    base ^>=4.16.4.0
+                      , aoc2024
+                      , containers
+                      , array
+    default-language:   Haskell2010
+    default-extensions: OverloadedStrings
+                      , TupleSections
+    hs-source-dirs: days
+    ghc-options:       -Wall -O2
+
+library
+    exposed-modules: Arrays, Dijkstra, Mayn, Parsing, Utils
+    build-depends:    base ^>=4.16.4.0
+                      , megaparsec
+                      , text
+                      , array
+                      , fingertree
+                      , utility-ht
+                      , composition
+                      , template-haskell
+                      , clock
+    hs-source-dirs:   common
+    default-language: Haskell2010
+    default-extensions: OverloadedStrings
+                      , TupleSections
+
+executable 01
+    import: aoc
+    main-is: 01.hs
+
+executable 02
+    import: aoc
+    main-is: 02.hs
+
+executable 03
+    import: aoc
+    main-is: 03.hs
+
+executable 04
+    import: aoc
+    main-is: 04.hs
+
+executable 05
+    import: aoc
+    main-is: 05.hs
+
+executable 06
+    import: aoc
+    main-is: 06.hs
+
+executable 07
+    import: aoc
+    main-is: 07.hs
+
+executable 08
+    import: aoc
+    main-is: 08.hs
+
+executable 09
+    import: aoc
+    main-is: 09.hs
+
+executable 10
+    import: aoc
+    main-is: 10.hs
+
+executable 11
+    import: aoc
+    main-is: 11.hs
+
+executable 12
+    import: aoc
+    main-is: 12.hs
+
+executable 13
+    import: aoc
+    main-is: 13.hs
+    
+executable 14
+    import: aoc
+    main-is: 14.hs
+
+executable 15
+    import: aoc
+    main-is: 15.hs
+
+executable 16
+    import: aoc
+    main-is: 16.hs
+
+executable 17
+    import: aoc
+    main-is: 17.hs
+
+executable 18
+    import: aoc
+    main-is: 18.hs
