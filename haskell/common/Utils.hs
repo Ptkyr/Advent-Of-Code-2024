@@ -64,9 +64,9 @@ generateWhile cond f x = takeWhileP1 cond $ iterate f x
 -- Generates line segment between two endpoints
 fillLine :: Coord -> Coord -> [Coord]
 fillLine src dst = generateWhile (dst /=) (liftT2 (+) $ unit) src
-  where
-    dir = liftT2 (-) dst src
-    unit = liftT1 (clamp (-1, 1)) dir
+ where
+  dir = liftT2 (-) dst src
+  unit = liftT1 (clamp (-1, 1)) dir
 
 nthTri :: Int -> Int
 nthTri n = (n * (n + 1)) `div` 2
@@ -92,3 +92,11 @@ cAnd = liftM2 (&&)
 
 cOr :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 cOr = liftM2 (||)
+
+-- | foldr variant that provides access to each tail of the list
+para :: (a -> [a] -> b -> b) -> b -> [a] -> b
+para _ b [] = b
+para f b (x : xs) = f x xs (para f b xs)
+
+remove :: (a -> Bool) -> [a] -> [a]
+remove f = filter (not . f)

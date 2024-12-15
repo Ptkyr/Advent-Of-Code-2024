@@ -1,6 +1,6 @@
 # Options should imitate Ormolu's style
 indentation: 2
-column-limit: 60
+column-limit: 80
 function-arrows: trailing
 comma-style: trailing
 import-export-style: trailing

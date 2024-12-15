@@ -5,7 +5,7 @@ module Arrays
 where
 
 import Data.Array
-import qualified Data.PriorityQueue.FingerTree as PQ
+import Data.PriorityQueue.FingerTree qualified as PQ
 import Utils
 
 type Arr a = Array Int a
@@ -27,16 +27,16 @@ listArr0 arr = listArray (0, length arr - 1) arr
 -- Construct a (1, 1)-indexed 2D array
 listArr2D1 :: [[a]] -> Arr2D a
 listArr2D1 arr = listArray ((1, 1), (x, y)) $ concat arr
-  where
-    x = length arr
-    y = length $ head arr
+ where
+  x = length arr
+  y = length $ head arr
 
 -- Construct a (0, 0)-indexed 2D array
 listArr2D0 :: [[a]] -> Arr2D a
 listArr2D0 arr = listArray ((0, 0), (x - 1, y - 1)) $ concat arr
-  where
-    x = length arr
-    y = length $ head arr
+ where
+  x = length arr
+  y = length $ head arr
 
 -- WARNING: partial function
 indexByValue :: (Ix i, Eq e) => e -> Array i e -> i
@@ -57,3 +57,6 @@ at arr c =
   if inRange (bounds arr) c
     then Just (arr ! c)
     else Nothing
+
+midpoint :: Arr a -> a
+midpoint arr = (!) arr $ snd (bounds arr) `div` 2
