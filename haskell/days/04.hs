@@ -36,10 +36,7 @@ partOne arr =
 partTwo :: Arr2D Char -> Int
 partTwo arr =
   length
-    . filter
-      ( \(i, e) ->
-          e == 'A' && xmas i
-      )
+    . filter (\(i, e) -> e == 'A' && xmas i)
     $ assocs arr
  where
   xmas :: Coord -> Bool
