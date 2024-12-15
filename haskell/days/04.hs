@@ -25,7 +25,7 @@ partOne arr =
     $ assocs arr
   where
     xmas :: Coords -> Bool
-    xmas coords = (== map Just "XMAS") $ map (at arr) coords
+    xmas = (== map Just "XMAS") . map (at arr)
     lineSearches :: Coord -> [Coords]
     lineSearches c = map (fillLine c) $ fanEnds c
     fanEnds :: Coord -> Coords
