@@ -4,7 +4,7 @@ column-limit: 60
 function-arrows: trailing
 comma-style: trailing
 import-export-style: trailing
-indent-wheres: true
+indent-wheres: false
 record-brace-space: true
 newlines-between-decls: 1
 haddock-style: single-line
