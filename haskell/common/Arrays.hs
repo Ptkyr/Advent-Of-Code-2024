@@ -6,6 +6,7 @@ where
 
 import Data.Array
 import qualified Data.PriorityQueue.FingerTree as PQ
+import Utils
 
 type Arr a = Array Int a
 
@@ -50,3 +51,9 @@ ayMax = snd . snd . bounds
 
 axMax :: Arr2D e -> Int
 axMax = fst . snd . bounds
+
+at :: Arr2D a -> Coord -> Maybe a
+at arr c =
+  if inRange (bounds arr) c
+    then Just (arr ! c)
+    else Nothing

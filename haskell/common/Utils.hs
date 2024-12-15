@@ -7,10 +7,14 @@ module Utils
     amap,
     mapAdjacent,
     digitToInt,
+    module Debug.Trace,
+    liftM2,
   )
 where
 
 import Control.Applicative hiding (some)
+import Debug.Trace
+
 -- mostly for .:
 import Control.Monad
 import Data.Char (digitToInt)
@@ -23,6 +27,8 @@ import GHC.Arr (amap)
 
 -- Typedefs
 type Coord = (Int, Int)
+
+type Coords = [Coord]
 
 -- Misc util
 add1 :: Int -> Int
@@ -49,21 +55,18 @@ toPairs (z : zs) = []
 fromPairs :: [(a, b)] -> ([a], [b])
 fromPairs lst = (map fst lst, map snd lst)
 
+takeWhileP1 :: (a -> Bool) -> [a] -> [a]
+takeWhileP1 p = foldr (\x ys -> if p x then x : ys else [x]) []
+
+generateWhile :: (a -> Bool) -> (a -> a) -> a -> [a]
+generateWhile cond f x = takeWhileP1 cond $ iterate f x
+
 -- Generates line segment between two endpoints
 fillLine :: Coord -> Coord -> [Coord]
-fillLine (x, y) (x', y')
-  | x == x' = map (x,) [min y y' .. max y y']
-  | y == y' = map (,y) [min x x' .. max x x']
-  | otherwise = zip xList yList
+fillLine src dst = generateWhile (dst /=) (liftT2 (+) $ unit) src
   where
-    xList =
-      if x < x'
-        then [x, x + 1 .. x']
-        else [x, x - 1 .. x']
-    yList =
-      if y < y'
-        then [y, y + 1 .. y']
-        else [y, y - 1 .. y']
+    dir = liftT2 (-) dst src
+    unit = liftT1 (clamp (-1, 1)) dir
 
 nthTri :: Int -> Int
 nthTri n = (n * (n + 1)) `div` 2

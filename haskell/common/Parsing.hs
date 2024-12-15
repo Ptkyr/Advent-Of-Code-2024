@@ -6,9 +6,11 @@ module Parsing
     module Text.Megaparsec.Debug,
     Text,
     readMaybe,
+    void,
   )
 where
 
+import Control.Monad (void)
 import Data.Text (Text, pack)
 import Data.Void
 import Text.Megaparsec hiding (parse)
@@ -35,10 +37,13 @@ hlexeme :: Parser a -> Parser a
 hlexeme = L.lexeme sipSome
 
 symbol :: Text -> Parser Text
-symbol = L.symbol eatSome
+symbol = L.symbol eatMany
 
 nat :: Parser Int
 nat = lexeme L.decimal
+
+num :: Parser Int
+num = L.decimal
 
 hnat :: Parser Int
 hnat = hlexeme L.decimal
