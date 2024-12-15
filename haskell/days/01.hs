@@ -16,4 +16,4 @@ partOne (a, b) = sum $ zipWith (abs .: (-)) as bs
   bs = sort b
 
 partTwo :: ([Int], [Int]) -> Int
-partTwo (a, b) = sum $ zipWith (*) a $ (map (\x -> countIf ((==) x) b)) a
+partTwo (a, b) = sum $ zipWith (*) a $ map (\x -> countIf (x ==) b) a

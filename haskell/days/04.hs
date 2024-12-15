@@ -8,7 +8,7 @@ import Utils
 $(generateMain "04")
 
 aocParse :: Parser (Arr2D Char)
-aocParse = listArr2D1 <$> (some upperChar) `endBy` newline <* eof
+aocParse = listArr2D1 <$> some upperChar `endBy` newline <* eof
 
 partOne :: Arr2D Char -> Int
 partOne arr =
@@ -17,10 +17,7 @@ partOne arr =
       ( \(i, e) ->
           if e /= 'X'
             then 0
-            else
-              ( countIf xmas $
-                  lineSearches i
-              )
+            else countIf xmas $ lineSearches i
       )
     $ assocs arr
  where
@@ -30,7 +27,8 @@ partOne arr =
   lineSearches c = map (fillLine c) $ fanEnds c
   fanEnds :: Coord -> Coords
   fanEnds c =
-    zipWith (liftT2 (+)) (repeat c) $
+    map
+      (liftT2 (+) c)
       [(-3, -3), (-3, 0), (-3, 3), (0, -3), (0, 3), (3, -3), (3, 0), (3, 3)]
 
 partTwo :: Arr2D Char -> Int
