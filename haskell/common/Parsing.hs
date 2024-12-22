@@ -52,6 +52,9 @@ hnat = hlexeme L.decimal
 int :: Parser Int
 int = L.signed eatSome nat
 
+digit :: Parser Int
+digit = digitToInt <$> lexeme digitChar
+
 regexdot :: Parser Char
 regexdot = anySingleBut '\n'
 

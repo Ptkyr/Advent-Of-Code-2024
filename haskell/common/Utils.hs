@@ -69,11 +69,10 @@ manhattan = phoenix (+) fst snd .: liftT2 (abs .: (-))
 nthTri :: Int -> Int
 nthTri n = (n * (n + 1)) `div` 2
 
--- Will drop the last element if odd
-toPairs :: [a] -> [(a, a)]
-toPairs (x : y : zs) = (x, y) : toPairs zs
-toPairs [] = []
-toPairs (z : zs) = []
+unalternate :: [a] -> ([a], [a])
+unalternate (x : y : zs) = liftT2 (:) (x, y) $ unalternate zs
+unalternate (z : zs) = ([z], [])
+unalternate [] = ([], [])
 
 fromPairs :: [(a, b)] -> ([a], [b])
 fromPairs lst = (map fst lst, map snd lst)
@@ -126,8 +125,8 @@ yharon t u1 u2 a = t (u1 a) (u2 a)
 liftT1 :: (a -> b) -> (a, a) -> (b, b)
 liftT1 f (x, y) = (f x, f y)
 
-liftT2 :: (a -> a -> b) -> (a, a) -> (a, a) -> (b, b)
-liftT2 f a b = (on f fst a b, on f snd a b)
+liftT2 :: (a -> b -> c) -> (a, a) -> (b, b) -> (c, c)
+liftT2 f (x1, x2) (y1, y2) = (f x1 y1, f x2 y2)
 
 cAnd :: (a -> Bool) -> (a -> Bool) -> a -> Bool
 cAnd = liftM2 (&&)
@@ -142,3 +141,9 @@ para f b (x : xs) = f x xs (para f b xs)
 
 remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
+
+wrapConvert :: ([a] -> [a]) -> (b -> a) -> (a -> b) -> [b] -> [b]
+wrapConvert apply to from = map from . apply . map to
+
+interleave :: [a] -> [a] -> [a]
+interleave xs ys = concat $ transpose [xs, ys]

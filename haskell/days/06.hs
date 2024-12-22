@@ -9,7 +9,6 @@ import Utils
 
 $(generateMain "06")
 
-data Square = Empty | Block | Start deriving (Show, Eq)
 type Start = Coord
 type Bounds = (Coord, Coord)
 type Walls = HS.HashSet Coord

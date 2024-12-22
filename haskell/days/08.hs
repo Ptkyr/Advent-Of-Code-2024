@@ -8,13 +8,8 @@ import Utils
 
 $(generateMain "08")
 
-data Antennae = Antennae
-  { freq :: Char,
-    spots :: CoordSet
-  }
-  deriving (Show)
-
 type CoordSet = HS.HashSet Coord
+type Antennae = CoordSet
 type Bounds = (Coord, Coord)
 type Input = (Bounds, [Antennae])
 
@@ -23,7 +18,7 @@ aocParse = do
   squares <- listArr2D1 <$> some regexdot `endBy` newline <* eof
   let ants = filter ((/= '.') . snd) $ assocs squares
   let grouped = groupBy ((==) `on` snd) $ sortBy (compare `on` snd) ants
-  let convert = map (\a -> Antennae (snd $ head a) $ HS.fromList $ map fst a)
+  let convert = map (HS.fromList . map fst)
   pure (bounds squares, convert grouped)
 
 partOne :: Input -> Int
@@ -39,7 +34,7 @@ solver :: NodeFinder -> Input -> Int
 solver finder (bnds, ants) = HS.size $ foldr (HS.union . antinodes (finder (inRange bnds))) HS.empty ants
  where
   antinodes :: NodeMaker -> Antennae -> CoordSet
-  antinodes nf (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
+  antinodes nf antennae = para func HS.empty $ HS.toList antennae
    where
     func :: Coord -> [Coord] -> CoordSet -> CoordSet
     func x tayl = HS.union (HS.fromList $ concatMap (nf x) tayl)
@@ -59,4 +54,4 @@ project :: Coord -> Coord -> Coord
 project x y = traveller x y y
 
 traveller :: Coord -> Coord -> Coord -> Coord
-traveller x y = liftT2 (+) (liftT2 (-) y x)
+traveller x y = liftT2 (+) $ liftT2 (-) y x
