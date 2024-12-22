@@ -15,9 +15,10 @@ import Data.Text (Text, pack)
 import Data.Void
 import Text.Megaparsec hiding (parse)
 import Text.Megaparsec.Char
-import qualified Text.Megaparsec.Char.Lexer as L
+import Text.Megaparsec.Char.Lexer qualified as L
 import Text.Megaparsec.Debug
 import Text.Read (readMaybe)
+import Utils
 
 type Parser = Parsec Void Text
 
@@ -68,3 +69,6 @@ lexword = lexeme $ some letterChar
 
 parseInput :: Parser a -> String -> IO (Either (ParseErrorBundle Text Void) a)
 parseInput parser file = runParser parser file . pack <$> readFile file
+
+sourceToCoord :: SourcePos -> (Int, Int)
+sourceToCoord pos = liftT1 unPos (sourceLine pos, sourceColumn pos)

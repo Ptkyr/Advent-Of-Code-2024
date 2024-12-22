@@ -33,8 +33,6 @@ aocParse = do
         (Start,) <$> getSourcePos <* lexeme "^",
         (Empty,) <$> getSourcePos <* lexeme "."
       ]
-  sourceToCoord :: SourcePos -> (Int, Int)
-  sourceToCoord pos = liftT1 unPos (sourceLine pos, sourceColumn pos)
 
 partOne :: (Start, Bounds, Walls) -> Int
 partOne (start, bnds, walls) = HM.size $ patrol bnds walls (HM.singleton start [U]) start U
