@@ -17,42 +17,32 @@ data Antennae = Antennae
 type CoordSet = HS.HashSet Coord
 type Bounds = (Coord, Coord)
 type Input = (Bounds, [Antennae])
-data Square = Empty | Ant deriving (Show, Eq)
 
 aocParse :: Parser Input
 aocParse = do
-  squares <- some square <* eof
-  let ants = filter ((/= '.') . snd) squares
+  squares <- listArr2D1 <$> some (alphaNumChar <|> char '.') `endBy` newline <* eof
+  let ants = filter ((/= '.') . snd) $ assocs squares
   let grouped = groupBy ((==) `on` snd) $ sortBy (compare `on` snd) ants
-  let convert =
-        map
-          ( \a ->
-              Antennae (snd $ head a) $
-                HS.fromList $
-                  map (sourceToCoord . fst) a
-          )
-  pure
-    ( ((1, 1), sourceToCoord . fst $ last squares),
-      convert grouped
-    )
- where
-  square :: Parser (SourcePos, Char)
-  square = (,) <$> getSourcePos <*> lexeme (alphaNumChar <|> char '.')
+  let convert = map (\a -> Antennae (snd $ head a) $ HS.fromList $ map fst a)
+  pure (bounds squares, convert grouped)
 
 partOne :: Input -> Int
-partOne (bnds, ants) = HS.size $ foldr (HS.union . antinodes (reflect (inRange bnds))) HS.empty ants
+partOne = solver reflect
 
 partTwo :: Input -> Int
-partTwo (bnds, ants) = HS.size $ foldr (HS.union . antinodes (pierce (inRange bnds))) HS.empty ants
+partTwo = solver pierce
 
 type NodeFinder = (Coord -> Bool) -> NodeMaker
 type NodeMaker = Coord -> Coord -> [Coord]
 
-antinodes :: NodeMaker -> Antennae -> CoordSet
-antinodes nf (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
+solver :: NodeFinder -> Input -> Int
+solver finder (bnds, ants) = HS.size $ foldr (HS.union . antinodes (finder (inRange bnds))) HS.empty ants
  where
-  func :: Coord -> [Coord] -> CoordSet -> CoordSet
-  func x tayl = HS.union (HS.fromList $ concatMap (nf x) tayl)
+  antinodes :: NodeMaker -> Antennae -> CoordSet
+  antinodes nf (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
+   where
+    func :: Coord -> [Coord] -> CoordSet -> CoordSet
+    func x tayl = HS.union (HS.fromList $ concatMap (nf x) tayl)
 
 reflect :: NodeFinder
 reflect valid x y = filter valid [project x y, project y x]

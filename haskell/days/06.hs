@@ -14,35 +14,32 @@ type Start = Coord
 type Bounds = (Coord, Coord)
 type Walls = HS.HashSet Coord
 type Visiteds = HM.HashMap Coord [Direction]
+type Input = (Start, Bounds, Walls)
 
-aocParse :: Parser (Start, Bounds, Walls)
+aocParse :: Parser Input
 aocParse = do
-  squares <- some square <* eof
-  let start = snd <$> find ((== Start) . fst) squares
-  let walls = map snd $ filter ((== Block) . fst) squares
-  pure
-    ( sourceToCoord $ fromJust start,
-      ((1, 1), sourceToCoord . snd $ last squares),
-      HS.fromList $ map sourceToCoord walls
+  squares <-
+    listArr2D1
+      <$> some (char '#' <|> char '^' <|> char '.')
+      `endBy` newline
+      <* eof
+  let start = find ((== '^') . snd) $ assocs squares
+  let walls = map fst $ filter ((== '#') . snd) $ assocs squares
+  pure (fst $ fromJust start, bounds squares, HS.fromList walls)
+
+partOne :: Input -> Int
+partOne = solver id
+
+partTwo :: Input -> Int
+partTwo input@(start, bnds, walls) =
+  solver
+    ( HM.filterWithKey
+        (\coord _ -> HM.null $ patrol bnds (HS.insert coord walls) (HM.singleton start [U]) start U)
     )
- where
-  square :: Parser (Square, SourcePos)
-  square =
-    choice
-      [ (Block,) <$> getSourcePos <* lexeme "#",
-        (Start,) <$> getSourcePos <* lexeme "^",
-        (Empty,) <$> getSourcePos <* lexeme "."
-      ]
+    input
 
-partOne :: (Start, Bounds, Walls) -> Int
-partOne (start, bnds, walls) = HM.size $ patrol bnds walls (HM.singleton start [U]) start U
-
-partTwo :: (Start, Bounds, Walls) -> Int
-partTwo (start, bnds, walls) =
-  HM.size
-    $ HM.filterWithKey
-      (\coord _ -> HM.null $ patrol bnds (HS.insert coord walls) (HM.singleton start [U]) start U)
-    $ patrol bnds walls (HM.singleton start [U]) start U
+solver :: (Visiteds -> Visiteds) -> Input -> Int
+solver f (start, bnds, walls) = HM.size . f $ patrol bnds walls (HM.singleton start [U]) start U
 
 patrol :: Bounds -> Walls -> Visiteds -> Coord -> Direction -> Visiteds
 patrol bnds walls set cur dir
