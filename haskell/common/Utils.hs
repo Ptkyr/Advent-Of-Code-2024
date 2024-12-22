@@ -8,11 +8,15 @@ module Utils
     mapAdjacent,
     digitToInt,
     module Debug.Trace,
-    liftM2,
+    numberLength,
+    module Data.Maybe,
+    module Control.Monad,
   )
 where
 
 import Control.Applicative hiding (some)
+import Data.Maybe
+import Data.NumberLength
 import Debug.Trace
 
 -- mostly for .:
@@ -30,6 +34,22 @@ type Coord = (Int, Int)
 
 type Coords = [Coord]
 
+data Direction = U | R | D | L deriving (Show, Eq, Ord, Enum)
+cc90 :: Direction -> Direction
+cc90 d = toEnum $ (fromEnum d + 1) `mod` 4
+
+ccw90 :: Direction -> Direction
+ccw90 d = toEnum $ (fromEnum d - 1) `mod` 4
+
+unitVec :: Direction -> Coord
+unitVec U = (-1, 0)
+unitVec R = (0, 1)
+unitVec D = (1, 0)
+unitVec L = (0, -1)
+
+stepDir :: Direction -> Coord -> Coord
+stepDir dir = liftT2 (+) (unitVec dir)
+
 -- Misc util
 add1 :: Int -> Int
 add1 = flip (+) 1
@@ -45,6 +65,9 @@ clamp2D ((x, y), (x', y')) (a, b) = (clamp (x, x') a, clamp (y, y') b)
 
 manhattan :: Coord -> Coord -> Int
 manhattan = phoenix (+) fst snd .: liftT2 (abs .: (-))
+
+nthTri :: Int -> Int
+nthTri n = (n * (n + 1)) `div` 2
 
 -- Will drop the last element if odd
 toPairs :: [a] -> [(a, a)]
@@ -68,8 +91,27 @@ fillLine src dst = generateWhile (dst /=) (liftT2 (+) $ unit) src
   dir = liftT2 (-) dst src
   unit = liftT1 (clamp (-1, 1)) dir
 
-nthTri :: Int -> Int
-nthTri n = (n * (n + 1)) `div` 2
+-- Travels in the direction of vec, stopping right before pred is satisfied
+laserUntil :: (Coord -> Bool) -> Coord -> Coord -> Coord
+laserUntil pred vec cur = if pred next then cur else laserUntil pred vec next
+ where
+  next = liftT2 (+) vec cur
+
+-- Travels in the direction of vec, stopping right before pred is satisfied
+pathUntil :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
+pathUntil pred vec cur = if pred next then [] else next : pathUntil pred vec next
+ where
+  next = liftT2 (+) vec cur
+
+-- Travels in the direction of vec, returning the coord satisfying pred
+laserTo :: (Coord -> Bool) -> Coord -> Coord -> Coord
+laserTo pred vec = liftT2 (+) vec . laserUntil pred vec
+
+-- Travels in the direction of vec, stopping right before pred is satisfied
+pathTo :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
+pathTo pred vec cur = liftT2 (+) vec (head path) : path
+ where
+  path = pathUntil pred vec cur
 
 -- Combinators
 phi :: (b -> y -> c) -> (a -> b) -> (x -> y) -> a -> x -> c

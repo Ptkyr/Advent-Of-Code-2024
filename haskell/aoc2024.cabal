@@ -9,6 +9,8 @@ common aoc
                       , aoc2024
                       , containers
                       , array
+                      , template-haskell
+                      , unordered-containers
     default-language:   Haskell2010
     default-extensions: OverloadedStrings
                       , TupleSections
@@ -27,6 +29,8 @@ library
                       , composition
                       , template-haskell
                       , clock
+                      , unordered-containers
+                      , number-length
     hs-source-dirs:   common
     default-language: Haskell2010
     default-extensions: OverloadedStrings
