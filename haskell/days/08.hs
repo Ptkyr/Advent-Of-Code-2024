@@ -48,11 +48,7 @@ partTwo (bnds, ants) = HS.size $ foldr (HS.union . antinodes pierce bnds) HS.emp
 type NodeFinder = Bounds -> Coord -> Coord -> [Coord]
 
 antinodes :: NodeFinder -> Bounds -> Antennae -> CoordSet
-antinodes nf bnds (Antennae _ nodes) =
-  para
-    func
-    HS.empty
-    $ HS.toList nodes
+antinodes nf bnds (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
  where
   func :: Coord -> [Coord] -> CoordSet -> CoordSet
   func x tayl = HS.union (HS.fromList $ concatMap (nf bnds x) tayl)
