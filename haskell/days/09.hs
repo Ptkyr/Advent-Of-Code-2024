@@ -31,16 +31,8 @@ aocParse = do
   (files, spaces) <- unalternate <$> some digit <* eof
   pure (map toFile . assocs $ listArr0 files, spaces)
 
-{-
 partOne :: Input -> Int
-partOne (files, spaces) = traceShow decompressed $ sum $ zipWith (*) [0 ..] decompressed
- where
-  decompressed = concatMap repl solved
-  solved = traceShow files $ traceShow spaces $ solve files spaces
--}
-
-partOne :: Input -> Int
-partOne (files, spaces) = traceShow decompressed $ sum $ zipWith (*) [0 ..] decompressed
+partOne (files, spaces) = sum $ zipWith (*) [0 ..] decompressed
  where
   decompressed = oneStep Forward files (reverse files) spaces 0
 
@@ -57,44 +49,4 @@ oneStep Backward files (r : rev'd) (s : spaces) idx
   | s == 0 = oneStep Forward files (r : rev'd) spaces idx
   | copies r == 0 = oneStep Backward files rev'd (s : init spaces) idx
   | otherwise = uuid r : oneStep Backward files (decr r : rev'd) (s - 1 : spaces) (idx + 1)
-
-fillSpace :: Int -> Files -> Files -> (Files, Files)
-fillSpace 0 filled reading = (filled, reading)
-fillSpace x filled (r : rs)
-  | copies r == 0 = fillSpace x filled rs
-  | otherwise = fillSpace (x - 1) newFilled (movedFile : rs)
- where
-  movedFile = File (uuid r) (copies r - 1)
-  newFilled = filled ++ [File (uuid r) 1]
-
-solve :: Files -> Spaces -> Files
-solve files spaces = traceShow ("prefix: " ++ (show $ reverse prefix)) $ traceShow ("mapped: " ++ show filled) $ cursedWeave (reverse prefix) (reverse filled)
- where
-  (filled, prefix) = foldl' mapper ([] :: [Files], reverse files) spaces
-   where
-    mapper :: ([Files], Files) -> Int -> ([Files], Files)
-    mapper (fs, rs) x = traceShow ("mapping " ++ show x ++ ": " ++ show mapped) (mapped : fs, newRs)
-     where
-      (mapped, newRs) = fillSpace x [] rs
-
-cursedWeave :: [a] -> [[a]] -> [a]
-cursedWeave [] ys = concat ys
-cursedWeave xs [] = xs
-cursedWeave (x : xs) (y : ys) = (x : y) ++ cursedWeave xs ys
-
-{-
-move :: Int -> (Files, Files) -> (Files, Files)
-move 0 (revs, fills) = (revs, fills)
-move x (r : rs, fs)
-  | numMoved < 0 = fs
-  | otherwise = [File (uuid f) $ copies f - 1] : fs
- where
-  numMoved = x - copies f
-move :: [File] -> Spaces -> [Int]
-move files [] = concatMap repl files
-move (f : fs) [0 : xs] = repl f ++ move fs xs
-move (f : fs) [x : xs] =
- where
-  repl :: File -> [Int]
-  repl x = replicate (copies x) (uuid x)
--}
+oneStep _ _ _ _ _ = error "Unreachable"
