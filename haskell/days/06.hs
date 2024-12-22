@@ -54,7 +54,7 @@ patrol bnds walls set cur dir
   | otherwise = patrol bnds walls newSet newPos (cc90 dir)
  where
   infinite = not . null $ mapMaybe (flip HM.lookup set >=> find (== dir)) path
-  newSet = foldl' (\acc c -> HM.insertWith (++) c [dir] acc) set $ cur : path
+  newSet = foldl' (\acc c -> HM.insertWith (++) c [dir] acc) set path
   newPos = last path
   path = pathUntil (cOr oob $ flip HS.member walls) (unitVec dir) cur
   oob :: Coord -> Bool
