@@ -40,27 +40,28 @@ aocParse = do
   square = (,) <$> getSourcePos <*> lexeme (alphaNumChar <|> char '.')
 
 partOne :: Input -> Int
-partOne (bnds, ants) = HS.size $ foldr (HS.union . antinodes reflect bnds) HS.empty ants
+partOne (bnds, ants) = HS.size $ foldr (HS.union . antinodes (reflect (inRange bnds))) HS.empty ants
 
 partTwo :: Input -> Int
-partTwo (bnds, ants) = HS.size $ foldr (HS.union . antinodes pierce bnds) HS.empty ants
+partTwo (bnds, ants) = HS.size $ foldr (HS.union . antinodes (pierce (inRange bnds))) HS.empty ants
 
-type NodeFinder = Bounds -> Coord -> Coord -> [Coord]
+type NodeFinder = (Coord -> Bool) -> NodeMaker
+type NodeMaker = Coord -> Coord -> [Coord]
 
-antinodes :: NodeFinder -> Bounds -> Antennae -> CoordSet
-antinodes nf bnds (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
+antinodes :: NodeMaker -> Antennae -> CoordSet
+antinodes nf (Antennae _ nodes) = para func HS.empty $ HS.toList nodes
  where
   func :: Coord -> [Coord] -> CoordSet -> CoordSet
-  func x tayl = HS.union (HS.fromList $ concatMap (nf bnds x) tayl)
+  func x tayl = HS.union (HS.fromList $ concatMap (nf x) tayl)
 
 reflect :: NodeFinder
-reflect bnds x y = filter (inRange bnds) [project x y, project y x]
+reflect valid x y = filter valid [project x y, project y x]
 
 pierce :: NodeFinder
-pierce bnds x y =
+pierce valid x y =
   on
     (++)
-    (takeWhile (inRange bnds))
+    (takeWhile valid)
     (iterate (traveller x y) y)
     (iterate (traveller y x) x)
 
