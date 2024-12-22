@@ -18,11 +18,7 @@ type Input = (Start, Bounds, Walls)
 
 aocParse :: Parser Input
 aocParse = do
-  squares <-
-    listArr2D1
-      <$> some (char '#' <|> char '^' <|> char '.')
-      `endBy` newline
-      <* eof
+  squares <- listArr2D1 <$> some regexdot `endBy` newline <* eof
   let start = find ((== '^') . snd) $ assocs squares
   let walls = map fst $ filter ((== '#') . snd) $ assocs squares
   pure (fst $ fromJust start, bounds squares, HS.fromList walls)

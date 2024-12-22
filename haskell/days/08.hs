@@ -20,7 +20,7 @@ type Input = (Bounds, [Antennae])
 
 aocParse :: Parser Input
 aocParse = do
-  squares <- listArr2D1 <$> some (alphaNumChar <|> char '.') `endBy` newline <* eof
+  squares <- listArr2D1 <$> some regexdot `endBy` newline <* eof
   let ants = filter ((/= '.') . snd) $ assocs squares
   let grouped = groupBy ((==) `on` snd) $ sortBy (compare `on` snd) ants
   let convert = map (\a -> Antennae (snd $ head a) $ HS.fromList $ map fst a)

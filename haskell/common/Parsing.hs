@@ -52,6 +52,9 @@ hnat = hlexeme L.decimal
 int :: Parser Int
 int = L.signed eatSome nat
 
+regexdot :: Parser Char
+regexdot = anySingleBut '\n'
+
 brackets :: Parser a -> Parser a
 brackets = between (symbol "[") (symbol "]")
 
