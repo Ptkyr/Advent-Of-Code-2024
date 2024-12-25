@@ -49,9 +49,3 @@ pierce valid x y =
     (takeWhile valid)
     (iterate (traveller x y) y)
     (iterate (traveller y x) x)
-
-project :: Coord -> Coord -> Coord
-project x y = traveller x y y
-
-traveller :: Coord -> Coord -> Coord -> Coord
-traveller x y = liftT2 (+) $ liftT2 (-) y x

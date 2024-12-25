@@ -55,6 +55,9 @@ int = L.signed eatSome nat
 digit :: Parser Int
 digit = digitToInt <$> lexeme digitChar
 
+hdigit :: Parser Int
+hdigit = digitToInt <$> digitChar
+
 regexdot :: Parser Char
 regexdot = anySingleBut '\n'
 

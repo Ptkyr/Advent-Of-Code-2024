@@ -11,6 +11,7 @@ common aoc
                       , array
                       , template-haskell
                       , unordered-containers
+                      , fgl
     default-language:   Haskell2010
     default-extensions: OverloadedStrings
                       , TupleSections
@@ -19,7 +20,7 @@ common aoc
     ghc-options:       -Wall -O2
 
 library
-    exposed-modules: Arrays, Dijkstra, Mayn, Parsing, Utils
+    exposed-modules: Arrays, Dijkstra, Graphs, Mayn, Parsing, Utils
     build-depends:    base ^>=4.16.4.0
                       , megaparsec
                       , text
@@ -32,6 +33,7 @@ library
                       , unordered-containers
                       , number-length
                       , criterion
+                      , fgl
     hs-source-dirs:   common
     default-language: Haskell2010
     default-extensions: OverloadedStrings

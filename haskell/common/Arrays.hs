@@ -60,3 +60,9 @@ at arr c =
 
 midpoint :: Arr a -> a
 midpoint arr = (!) arr $ snd (bounds arr) `div` 2
+
+to1D :: Int -> Coord -> Int
+to1D len (x, y) = len * x + y
+
+to2D :: Int -> Int -> Coord
+to2D len xy = (xy `div` len, xy `mod` len)

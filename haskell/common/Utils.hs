@@ -83,6 +83,25 @@ takeWhileP1 p = foldr (\x ys -> if p x then x : ys else [x]) []
 generateWhile :: (a -> Bool) -> (a -> a) -> a -> [a]
 generateWhile cond f x = takeWhileP1 cond $ iterate f x
 
+cardinals :: Coord -> [Coord]
+cardinals (vx, vy) =
+  [ (vx - 1, vy),
+    (vx + 1, vy),
+    (vx, vy - 1),
+    (vx, vy + 1)
+  ]
+
+ordinals :: Coord -> [Coord]
+ordinals (vx, vy) =
+  [ (vx - 1, vy + 1),
+    (vx + 1, vy + 1),
+    (vx + 1, vy - 1),
+    (vx + 1, vy + 1)
+  ]
+
+cordinals :: Coord -> [Coord]
+cordinals = phoenix (++) cardinals ordinals
+
 -- Generates line segment between two endpoints
 fillLine :: Coord -> Coord -> [Coord]
 fillLine src dst = generateWhile (dst /=) (liftT2 (+) $ unit) src
@@ -111,6 +130,14 @@ pathTo :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
 pathTo pred vec cur = liftT2 (+) vec (head path) : path
  where
   path = pathUntil pred vec cur
+
+-- Computes 2y - x
+project :: Coord -> Coord -> Coord
+project x y = traveller x y y
+
+-- Computes an adder in the direction and magnitude of y - x
+traveller :: Coord -> Coord -> Coord -> Coord
+traveller x y = liftT2 (+) $ liftT2 (-) y x
 
 -- Combinators
 phi :: (b -> y -> c) -> (a -> b) -> (x -> y) -> a -> x -> c
@@ -147,3 +174,7 @@ wrapConvert apply to from = map from . apply . map to
 
 interleave :: [a] -> [a] -> [a]
 interleave xs ys = concat $ transpose [xs, ys]
+
+isSomeAnd :: (a -> Bool) -> Maybe a -> Bool
+isSomeAnd _ Nothing = False
+isSomeAnd f (Just a) = f a
