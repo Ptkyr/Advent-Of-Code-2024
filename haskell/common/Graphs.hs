@@ -15,10 +15,10 @@ buildGraph nbr arr = mkGraph nodelist edgelist
  where
   bnds = bounds arr
   len = add1 . fst $ snd bnds
-  (nodelist, edgelist) = foldl' something ([], []) $ assocs arr
+  (nodelist, edgelist) = foldl' convert ([], []) $ assocs arr
    where
-    something :: ([LNode a], [Edg]) -> (Coord, a) -> ([LNode a], [Edg])
-    something (ns, es) (idx, val) =
+    convert :: ([LNode a], [Edg]) -> (Coord, a) -> ([LNode a], [Edg])
+    convert (ns, es) (idx, val) =
       ( (nodeid, val) : ns,
         map
           ((nodeid,,()) . to1D len)

@@ -10,7 +10,6 @@ module Parsing
   )
 where
 
-import Control.Monad (void)
 import Data.Text (Text, pack)
 import Data.Void
 import Text.Megaparsec hiding (parse)

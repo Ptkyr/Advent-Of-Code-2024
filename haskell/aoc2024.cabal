@@ -17,7 +17,7 @@ common aoc
                       , TupleSections
                       , ImportQualifiedPost
     hs-source-dirs: days
-    ghc-options:       -Wall -O2
+    ghc-options:       -Wall
 
 library
     exposed-modules: Arrays, Dijkstra, Graphs, Mayn, Parsing, Utils
@@ -39,6 +39,7 @@ library
     default-extensions: OverloadedStrings
                       , TupleSections
                       , ImportQualifiedPost
+    ghc-options:       -Wall
 
 executable 01
     import: aoc

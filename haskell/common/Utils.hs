@@ -14,7 +14,6 @@ module Utils
   )
 where
 
-import Control.Applicative hiding (some)
 import Data.Maybe
 import Data.NumberLength
 import Debug.Trace
@@ -34,6 +33,7 @@ type Coord = (Int, Int)
 
 type Coords = [Coord]
 
+-- 2D Vector-related things
 data Direction = U | R | D | L deriving (Show, Eq, Ord, Enum)
 cc90 :: Direction -> Direction
 cc90 d = toEnum $ (fromEnum d + 1) `mod` 4
@@ -69,20 +69,6 @@ manhattan = phoenix (+) fst snd .: liftT2 (abs .: (-))
 nthTri :: Int -> Int
 nthTri n = (n * (n + 1)) `div` 2
 
-unalternate :: [a] -> ([a], [a])
-unalternate (x : y : zs) = liftT2 (:) (x, y) $ unalternate zs
-unalternate (z : zs) = ([z], [])
-unalternate [] = ([], [])
-
-fromPairs :: [(a, b)] -> ([a], [b])
-fromPairs lst = (map fst lst, map snd lst)
-
-takeWhileP1 :: (a -> Bool) -> [a] -> [a]
-takeWhileP1 p = foldr (\x ys -> if p x then x : ys else [x]) []
-
-generateWhile :: (a -> Bool) -> (a -> a) -> a -> [a]
-generateWhile cond f x = takeWhileP1 cond $ iterate f x
-
 cardinals :: Coord -> [Coord]
 cardinals (vx, vy) =
   [ (vx - 1, vy),
@@ -109,27 +95,27 @@ fillLine src dst = generateWhile (dst /=) (liftT2 (+) $ unit) src
   dir = liftT2 (-) dst src
   unit = liftT1 (clamp (-1, 1)) dir
 
--- Travels in the direction of vec, stopping right before pred is satisfied
+-- Travels in the direction of vec, stopping right before cond is satisfied
 laserUntil :: (Coord -> Bool) -> Coord -> Coord -> Coord
-laserUntil pred vec cur = if pred next then cur else laserUntil pred vec next
+laserUntil cond vec cur = if cond next then cur else laserUntil cond vec next
  where
   next = liftT2 (+) vec cur
 
--- Travels in the direction of vec, stopping right before pred is satisfied
+-- Travels in the direction of vec, stopping right before cond is satisfied
 pathUntil :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
-pathUntil pred vec cur = if pred next then [] else next : pathUntil pred vec next
+pathUntil cond vec cur = if cond next then [] else next : pathUntil cond vec next
  where
   next = liftT2 (+) vec cur
 
--- Travels in the direction of vec, returning the coord satisfying pred
+-- Travels in the direction of vec, returning the coord satisfying cond
 laserTo :: (Coord -> Bool) -> Coord -> Coord -> Coord
-laserTo pred vec = liftT2 (+) vec . laserUntil pred vec
+laserTo cond vec = liftT2 (+) vec . laserUntil cond vec
 
--- Travels in the direction of vec, stopping right before pred is satisfied
+-- Travels in the direction of vec, stopping right before cond is satisfied
 pathTo :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
-pathTo pred vec cur = liftT2 (+) vec (head path) : path
+pathTo cond vec cur = liftT2 (+) vec (head path) : path
  where
-  path = pathUntil pred vec cur
+  path = pathUntil cond vec cur
 
 -- Computes 2y - x
 project :: Coord -> Coord -> Coord
@@ -166,6 +152,21 @@ para :: (a -> [a] -> b -> b) -> b -> [a] -> b
 para _ b [] = b
 para f b (x : xs) = f x xs (para f b xs)
 
+-- Some list util
+unalternate :: [a] -> ([a], [a])
+unalternate (x : y : zs) = liftT2 (:) (x, y) $ unalternate zs
+unalternate (z : _) = ([z], [])
+unalternate [] = ([], [])
+
+fromPairs :: [(a, b)] -> ([a], [b])
+fromPairs lst = (map fst lst, map snd lst)
+
+takeWhileP1 :: (a -> Bool) -> [a] -> [a]
+takeWhileP1 p = foldr (\x ys -> if p x then x : ys else [x]) []
+
+generateWhile :: (a -> Bool) -> (a -> a) -> a -> [a]
+generateWhile cond f x = takeWhileP1 cond $ iterate f x
+
 remove :: (a -> Bool) -> [a] -> [a]
 remove f = filter (not . f)
 
@@ -175,6 +176,10 @@ wrapConvert apply to from = map from . apply . map to
 interleave :: [a] -> [a] -> [a]
 interleave xs ys = concat $ transpose [xs, ys]
 
+halve :: [a] -> ([a], [a])
+halve = splitAt <$> flip div 2 . (+ 1) . length <*> id
+
+-- Maybe util
 isSomeAnd :: (a -> Bool) -> Maybe a -> Bool
 isSomeAnd _ Nothing = False
 isSomeAnd f (Just a) = f a

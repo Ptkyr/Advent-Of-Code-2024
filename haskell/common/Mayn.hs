@@ -4,9 +4,6 @@ module Mayn where
 
 import Criterion.Main
 import Language.Haskell.TH
-import System.Clock
-import System.Environment (getArgs)
-import System.IO
 import Text.Megaparsec (errorBundlePretty)
 
 generateMain :: String -> Q [Dec]

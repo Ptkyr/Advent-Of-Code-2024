@@ -20,7 +20,7 @@ data Dijkstra = Dijkstra
   deriving (Show)
 
 neighbours :: Graph -> Coord -> (Node -> Node -> Bool) -> [Coord]
-neighbours graph v@(vx, vy) fltr =
+neighbours graph v fltr =
   filter liftFilter $
     map (clamp2D (bounds graph)) $
       cardinals v
@@ -32,7 +32,7 @@ neighbours graph v@(vx, vy) fltr =
     vAt = graph ! v
 
 dijkstra :: (Coord -> Bool) -> (Node -> Node -> Bool) -> Dijkstra -> Int
-dijkstra endCond adjCond info@(Dijkstra s e _ c) =
+dijkstra endCond adjCond info@(Dijkstra s _ _ c) =
   dijk' info {_costs = c // [(s, 0)]} $
     PQ.singleton 0 s
  where

@@ -31,7 +31,7 @@ partTwo graph = length $ foldl' extensions (map singleton $ trailheads graph) [1
     extend :: Trail -> [Trail]
     extend tl@(x : _) =
       map (: tl) . filter (isSomeAnd (== height) . lab graph) $ neighbors graph x
-    extend _ = error "Unreachable"
+    extend [] = error "Unreachable"
 
 trailheads :: Input -> [Node]
 trailheads graph = filter (isSomeAnd (== 0) . lab graph) $ nodes graph

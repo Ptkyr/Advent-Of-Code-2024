@@ -5,7 +5,6 @@ module Arrays
 where
 
 import Data.Array
-import Data.PriorityQueue.FingerTree qualified as PQ
 import Utils
 
 type Arr a = Array Int a
