@@ -2,8 +2,10 @@
 
 module Mayn where
 
+import Criterion.Main
 import Language.Haskell.TH
 import System.Clock
+import System.Environment (getArgs)
 import System.IO
 import Text.Megaparsec (errorBundlePretty)
 
@@ -20,6 +22,13 @@ generateMain day = do
           Right input -> do
             print $ partOne input
             print $ partTwo input
+            {-
+            bgroup
+              ("Day" ++ day)
+              [ bench "p1" $ nf partOne input,
+                bench "p2" $ nf partTwo input
+              ]
+            -}
       |]
   let typeSig = SigD (mkName "main") (AppT (ConT ''IO) (TupleT 0)) -- IO ()
   let funDec = FunD (mkName "main") [Clause [] (NormalB driver) []]

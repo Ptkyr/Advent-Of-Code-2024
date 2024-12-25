@@ -31,6 +31,7 @@ library
                       , clock
                       , unordered-containers
                       , number-length
+                      , criterion
     hs-source-dirs:   common
     default-language: Haskell2010
     default-extensions: OverloadedStrings

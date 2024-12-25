@@ -1,7 +1,8 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 import Arrays
-import Control.Exception (assert)
+import Data.Sequence (Seq (..), (<|), (|>))
+import Data.Sequence qualified as S
 import Mayn
 import Parsing
 import Utils
@@ -13,8 +14,8 @@ data File = File
     copies :: Int
   }
   deriving (Show)
-type Files = [File]
-type Spaces = [Int]
+type Files = S.Seq File
+type Spaces = S.Seq Int
 type Input = (Files, Spaces)
 
 repl :: File -> [Int]
@@ -29,24 +30,24 @@ toFile (a, b) = File a b
 aocParse :: Parser Input
 aocParse = do
   (files, spaces) <- unalternate <$> some digit <* eof
-  pure (map toFile . assocs $ listArr0 files, spaces)
+  pure (S.fromList . map toFile . assocs $ listArr0 files, S.fromList spaces)
 
 partOne :: Input -> Int
 partOne (files, spaces) = sum $ zipWith (*) [0 ..] decompressed
  where
-  decompressed = oneStep Forward files (reverse files) spaces 0
+  decompressed = oneStep Fwd files spaces 0
 
 partTwo :: Input -> Int
 partTwo a = 56
 
-data Selector = Forward | Backward
-oneStep :: Selector -> Files -> Files -> Spaces -> Int -> [Int]
-oneStep Forward (f : _) (r : _) [] _ = assert (uuid f == uuid r) $ repl r
-oneStep _ _ _ [] _ = []
-oneStep Forward (f : files) rev'd spaces idx =
-  repl f ++ oneStep Backward files rev'd spaces (idx + copies f)
-oneStep Backward files (r : rev'd) (s : spaces) idx
-  | s == 0 = oneStep Forward files (r : rev'd) spaces idx
-  | copies r == 0 = oneStep Backward files rev'd (s : init spaces) idx
-  | otherwise = uuid r : oneStep Backward files (decr r : rev'd) (s - 1 : spaces) (idx + 1)
-oneStep _ _ _ _ _ = error "Unreachable"
+data Selector = Fwd | Bck
+oneStep :: Selector -> Files -> Spaces -> Int -> [Int]
+oneStep Fwd (f :<| _) Empty _ = repl f
+oneStep _ _ Empty _ = []
+oneStep Fwd (f :<| fs) spaces idx =
+  repl f ++ oneStep Bck fs spaces (idx + copies f)
+oneStep Bck files@(rs :|> r) (s :<| ss) idx
+  | s == 0 = oneStep Fwd files ss idx
+  | copies r == 0 = oneStep Bck rs (s <| S.take (S.length ss - 1) ss) idx
+  | otherwise = uuid r : oneStep Bck (rs |> decr r) (s - 1 <| ss) (idx + 1)
+oneStep _ _ _ _ = error "Unreachable"
