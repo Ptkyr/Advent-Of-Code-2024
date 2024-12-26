@@ -183,3 +183,17 @@ halve = splitAt <$> flip div 2 . (+ 1) . length <*> id
 isSomeAnd :: (a -> Bool) -> Maybe a -> Bool
 isSomeAnd _ Nothing = False
 isSomeAnd f (Just a) = f a
+
+-- Statistics
+welford :: [Float] -> (Float, Float)
+welford l = (m, v / (c - 1))
+ where
+  (c, m, v) = foldr update (0.0, 0.0, 0.0) l
+  update :: Float -> (Float, Float, Float) -> (Float, Float, Float)
+  update x (cnt, mn, var) = (new_c, new_mn, new_var)
+   where
+    new_c = cnt + 1
+    delta = x - mn
+    new_mn = delta / new_c
+    delta2 = x - new_mn
+    new_var = var + delta * delta2

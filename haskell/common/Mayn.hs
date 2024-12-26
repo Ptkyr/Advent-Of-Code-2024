@@ -19,13 +19,13 @@ generateMain day = do
           Right input -> do
             print $ partOne input
             print $ partTwo input
-            defaultMain
+            {-defaultMain
               [ bgroup
                   ("Day" ++ day)
                   [ bench "p1" $ nf partOne input,
                     bench "p2" $ nf partTwo input
                   ]
-              ]
+              ]-}
       |]
   let typeSig = SigD (mkName "main") (AppT (ConT ''IO) (TupleT 0)) -- IO ()
   let funDec = FunD (mkName "main") [Clause [] (NormalB driver) []]
