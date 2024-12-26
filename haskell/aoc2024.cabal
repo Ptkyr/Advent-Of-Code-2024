@@ -34,6 +34,7 @@ library
                       , number-length
                       , criterion
                       , fgl
+                      , split
     hs-source-dirs:   common
     default-language: Haskell2010
     default-extensions: OverloadedStrings

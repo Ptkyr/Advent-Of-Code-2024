@@ -5,6 +5,7 @@ module Arrays
 where
 
 import Data.Array
+import Data.List.Split
 import Utils
 
 type Arr a = Array Int a
@@ -65,3 +66,14 @@ to1D len (x, y) = len * x + y
 
 to2D :: Int -> Int -> Coord
 to2D len xy = (xy `div` len, xy `mod` len)
+
+pretty2D :: (Int -> Int) -> Arr2D Char -> String
+pretty2D f arr = intercalate "\n" . chunksOf (f ym) $ elems arr
+ where
+  (_, (_, ym)) = bounds arr
+
+pretty2D0 :: Arr2D Char -> String
+pretty2D0 = pretty2D (+ 1)
+
+pretty2D1 :: Arr2D Char -> String
+pretty2D1 = pretty2D id

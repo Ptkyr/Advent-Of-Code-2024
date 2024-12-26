@@ -80,3 +80,12 @@ parseInput parser file = runParser parser file . pack <$> readFile file
 
 sourceToCoord :: SourcePos -> (Int, Int)
 sourceToCoord pos = liftT1 unPos (sourceLine pos, sourceColumn pos)
+
+parseDir :: Parser Direction
+parseDir =
+  choice
+    [ U <$ lexeme "^",
+      R <$ lexeme ">",
+      D <$ lexeme "v",
+      L <$ lexeme "<"
+    ]

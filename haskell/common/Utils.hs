@@ -111,9 +111,9 @@ pathUntil cond vec cur = if cond next then [] else next : pathUntil cond vec nex
 laserTo :: (Coord -> Bool) -> Coord -> Coord -> Coord
 laserTo cond vec = liftT2 (+) vec . laserUntil cond vec
 
--- Travels in the direction of vec, stopping right before cond is satisfied
+-- Travels in the direction of vec, returning the coord satisfying cond
 pathTo :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
-pathTo cond vec cur = liftT2 (+) vec (head path) : path
+pathTo cond vec cur = path ++ [liftT2 (+) vec (last path)]
  where
   path = pathUntil cond vec cur
 
