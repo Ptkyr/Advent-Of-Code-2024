@@ -1,6 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-import Arrays
 import Mayn
 import Parsing
 import Utils
@@ -17,7 +16,9 @@ type Input = [Robot]
 xLen :: Int
 xLen = 101
 yLen :: Int
-yLen = 103
+yLen = xLen + 2
+modInv :: Int
+modInv = (xLen + 1) `div` 2
 
 aocParse :: Parser Input
 aocParse = some robot <* eof
@@ -30,6 +31,21 @@ aocParse = some robot <* eof
 
 partOne :: Input -> Int
 partOne = product . map length . group . sort . mapMaybe quadrant . (!! 100) . iterate (map walk)
+
+partTwo :: Input -> Int
+partTwo =
+  crt
+    . foldl' variance ((1000.0, 0), (1000.0, 0))
+    . zip [0 ..]
+    . take yLen
+    . iterate (map walk)
+ where
+  crt ((_, x), (_, y)) = (modInv * (x * yLen + y * xLen)) `mod` (xLen * yLen)
+  variance (x, y) (i, e) = (newvar fst x, newvar snd y)
+   where
+    newvar f (oldv, old) = if oldv < newv then (oldv, old) else (newv, i)
+     where
+      newv = sampvar $ map (fromIntegral . f . pos) e
 
 walk :: Robot -> Robot
 walk (Robot (p1, p2) d@(d1, d2)) = Robot ((p1 + d1) `mod` xLen, (p2 + d2) `mod` yLen) d
@@ -46,13 +62,3 @@ quadrant (Robot (x, y) _)
  where
   xMid = xLen `div` 2
   yMid = yLen `div` 2
-
-partTwo :: Input -> Int
-partTwo _ = 8050 -- prettyPrint . (!! 8050) . iterate (map walk)
-
-prettyPrint :: Input -> String
-prettyPrint inp = if "#########" `isInfixOf` res then res ++ "\n" else ""
- where
-  res = map (\(i, e) -> if i `elem` poses then '#' else e) $ assocs arr
-  poses = map pos inp
-  arr = listArr2D0 (replicate yLen (replicate xLen '.' ++ "\n"))

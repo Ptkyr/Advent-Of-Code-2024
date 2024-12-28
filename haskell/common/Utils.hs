@@ -185,15 +185,19 @@ isSomeAnd _ Nothing = False
 isSomeAnd f (Just a) = f a
 
 -- Statistics
+-- Returns mean and sample variance
 welford :: [Float] -> (Float, Float)
 welford l = (m, v / (c - 1))
  where
-  (c, m, v) = foldr update (0.0, 0.0, 0.0) l
-  update :: Float -> (Float, Float, Float) -> (Float, Float, Float)
-  update x (cnt, mn, var) = (new_c, new_mn, new_var)
+  (c, m, v) = foldl' update (0.0, 0.0, 0.0) l
+  update :: (Float, Float, Float) -> Float -> (Float, Float, Float)
+  update (cnt, mn, var) x = (new_c, new_mn, new_var)
    where
     new_c = cnt + 1
     delta = x - mn
-    new_mn = delta / new_c
+    new_mn = mn + delta / new_c
     delta2 = x - new_mn
     new_var = var + delta * delta2
+
+sampvar :: [Float] -> Float
+sampvar = snd . welford

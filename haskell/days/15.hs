@@ -41,12 +41,12 @@ move gr@(Grid r g) dir = matcher (g ! attempt)
   matcher :: Char -> Grid
   matcher '#' = gr
   matcher '.' = Grid attempt newRobot
-  matcher _ = case g ! tl of
+  matcher _ = case g ! dest of
     '#' -> gr
-    '.' -> Grid attempt (newRobot // [(tl, 'O')])
+    '.' -> Grid attempt (newRobot // [(dest, 'O')])
     _ -> error "Unreachable"
    where
-    tl = laserTo ((/= 'O') . (g !)) (unitVec dir) r
+    dest = laserTo ((/= 'O') . (g !)) (unitVec dir) r
 
 partTwo :: Input -> Int
 partTwo a = 56
