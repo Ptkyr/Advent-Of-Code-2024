@@ -57,5 +57,5 @@ floodfill grid start = floodhelp [start] $ HS.singleton start
     popstack nbr old@(stacc, setacc)
       | not (inRange (bounds grid) nbr)
       || HS.member nbr setacc 
-      || grid ! nbr /= cur = old
+      || grid ! nbr /= cur = old  
       | otherwise = (nbr : stacc, HS.insert nbr setacc)
