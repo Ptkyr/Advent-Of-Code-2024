@@ -30,7 +30,14 @@ aocParse = some robot <* eof
     pure $ Robot p d
 
 partOne :: Input -> Int
-partOne = product . map length . group . sort . mapMaybe quadrant . (!! 100) . iterate (map walk)
+partOne =
+  product
+    . map length
+    . group
+    . sort
+    . mapMaybe quadrant
+    . (!! 100)
+    . iterate (map walk)
 
 partTwo :: Input -> Int
 partTwo =
