@@ -38,8 +38,8 @@ scorer f set =
     $ HS.toList set
  where
   folder (p, d) perim
-    | not $ HS.member nbr set = perim + 1
-    | HS.member (stepDir d nbr) set = perim + 1
+    | not (HS.member nbr set)
+    || HS.member (stepDir d nbr) set = perim + 1
     | otherwise = f perim
    where
     nbr = stepDir (cc90 d) p
@@ -55,7 +55,7 @@ floodfill grid start = floodhelp [start] $ HS.singleton start
     (stack, newset) = foldr popstack (xs, set) $ cardinals x
     popstack :: Coord -> ([Coord], CoordSet) -> ([Coord], CoordSet)
     popstack nbr old@(stacc, setacc)
-      | not $ inRange (bounds grid) nbr = old
-      | HS.member nbr setacc = old
-      | grid ! nbr /= cur = old
+      | not (inRange (bounds grid) nbr)
+      || HS.member nbr setacc 
+      || grid ! nbr /= cur = old
       | otherwise = (nbr : stacc, HS.insert nbr setacc)

@@ -111,7 +111,7 @@ pathUntil cond vec cur = if cond next then [] else next : pathUntil cond vec nex
 laserTo :: (Coord -> Bool) -> Coord -> Coord -> Coord
 laserTo cond vec = liftT2 (+) vec . laserUntil cond vec
 
--- Travels in the direction of vec, returning the coord satisfying cond
+-- Travels in the direction of vec, returning the coords up to satisfying cond
 pathTo :: (Coord -> Bool) -> Coord -> Coord -> [Coord]
 pathTo cond vec cur = path ++ [liftT2 (+) vec (last path)]
  where
@@ -155,8 +155,7 @@ para f b (x : xs) = f x xs (para f b xs)
 -- Some list util
 unalternate :: [a] -> ([a], [a])
 unalternate (x : y : zs) = liftT2 (:) (x, y) $ unalternate zs
-unalternate (z : _) = ([z], [])
-unalternate [] = ([], [])
+unalternate z = (z, [])
 
 fromPairs :: [(a, b)] -> ([a], [b])
 fromPairs lst = (map fst lst, map snd lst)
