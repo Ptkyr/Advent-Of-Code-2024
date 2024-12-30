@@ -12,7 +12,7 @@ data System = System
     _b :: Button,
     goal :: Coord
   }
-  deriving (Show, Eq)
+  deriving (Show)
 type Input = [System]
 
 aocParse :: Parser Input

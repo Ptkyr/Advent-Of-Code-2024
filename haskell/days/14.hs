@@ -55,7 +55,8 @@ partTwo =
       newv = sampvar $ map (fromIntegral . f . pos) e
 
 walk :: Robot -> Robot
-walk (Robot (p1, p2) d@(d1, d2)) = Robot ((p1 + d1) `mod` xLen, (p2 + d2) `mod` yLen) d
+walk (Robot (p1, p2) d@(d1, d2)) =
+  Robot ((p1 + d1) `mod` xLen, (p2 + d2) `mod` yLen) d
 
 data Quadrant = NE | NW | SW | SE deriving (Show, Eq, Ord)
 
