@@ -14,8 +14,8 @@ aocParse = catMaybes <$> some maybeInst <* eof
  where
   maybeInst =
     try (Just . Mul <$> oneMul)
-      <|> (Just <$> (Do <$ lexeme "do()"))
-      <|> (Just <$> (Dont <$ lexeme "don't()"))
+      <|> Just Do <$ lexeme "do()"
+      <|> Just Dont <$ lexeme "don't()"
       <|> Nothing <$ asciiChar
   oneMul :: Parser Coord
   oneMul =
